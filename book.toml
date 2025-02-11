@@ -4,3 +4,6 @@ language = "en"
 multilingual = false
 src = "src"
 title = "Steel"
+
+[preprocessor.sitemap]
+base_url = "http://localhost:3000"
