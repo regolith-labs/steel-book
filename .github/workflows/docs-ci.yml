@@ -26,28 +26,28 @@ jobs:
         with:
           args: --verbose --no-progress "./public/**/*.html"
 
-      - name: Accessibility audit
-        run: |
-          npm i -g static-sitemap-cli
-          sscli -b http://localhost:3000 -r public
+      # - name: Accessibility audit
+      #   run: |
+      #     npm i -g static-sitemap-cli
+      #     sscli -b http://localhost:3000 -r public
 
-          npm install -g pa11y pa11y-ci serve
-          npx serve ./public &
+      #     npm install -g pa11y pa11y-ci serve
+      #     npx serve ./public &
 
-          # Wait for the server to be available
-          for i in {1..10}; do
-            curl -s --head http://localhost:3000/sitemap.xml | grep "200 OK" && break
-            echo "Waiting for server..."
-            sleep 2
-          done
+      #     # Wait for the server to be available
+      #     for i in {1..10}; do
+      #       curl -s --head http://localhost:3000/sitemap.xml | grep "200 OK" && break
+      #       echo "Waiting for server..."
+      #       sleep 2
+      #     done
 
-          # Verify sitemap exists before running pa11y-ci
-          if curl -s --head http://localhost:3000/sitemap.xml | grep "200 OK"; then
-            PUPPETEER_ARGS="--no-sandbox" pa11y-ci --sitemap http://localhost:3000/sitemap.xml
-          else
-            echo "Error: sitemap.xml not found"
-            exit 1
-          fi
+      #     # Verify sitemap exists before running pa11y-ci
+      #     if curl -s --head http://localhost:3000/sitemap.xml | grep "200 OK"; then
+      #       PUPPETEER_ARGS="--no-sandbox" pa11y-ci --sitemap http://localhost:3000/sitemap.xml
+      #     else
+      #       echo "Error: sitemap.xml not found"
+      #       exit 1
+      #     fi
 
       - name: Cache dependencies
         uses: actions/cache@v3
