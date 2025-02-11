@@ -43,7 +43,8 @@ jobs:
 
           # Verify sitemap exists before running pa11y-ci
           if curl -s --head http://localhost:3000/sitemap.xml | grep "200 OK"; then
-            pa11y-ci --sitemap http://localhost:3000/sitemap.xml
+            PA11Y_OPTS="--chrome-launcher --no-sandbox"
+            pa11y-ci --sitemap http://localhost:3000/sitemap.xml $PA11Y_OPTS
           else
             echo "Error: sitemap.xml not found"
             exit 1
