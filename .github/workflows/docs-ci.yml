@@ -1,0 +1,40 @@
+name: Documentation QA
+on: [pull_request, push]
+
+jobs:
+  quality-checks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install mdBook
+      uses: peaceiris/actions-mdbook@v2
+      with:
+        mdbook-version: '0.4.35'
+
+    - name: Build documentation site
+      run: mdbook build --dest-dir ./public
+
+    - name: Spell check sources
+      run: |
+        pip install codespell
+        codespell ./src/**/*.md --skip="*.css,*.svg" --ignore-words-list="async,config"
+
+    - name: Link validation
+      uses: lycheeverse/lychee-action@v1
+      with:
+        args: --verbose --no-progress ./public/**/*.html
+
+    - name: Accessibility audit
+      run: |
+        npm install -g pa11y pa11y-ci
+        npx serve ./public &
+        pa11y-ci --sitemap http://localhost:3000/sitemap.xml
+
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo
+          ~/.npm
+        key: ${{ runner.os }}-deps-${{ hashFiles('**/Cargo.lock') }}
