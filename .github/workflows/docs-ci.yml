@@ -22,32 +22,37 @@ jobs:
           codespell ./src/**/*.md --skip="*.css,*.svg" --ignore-words-list="async,config"
 
       - name: Link validation
-        uses: lycheeverse/lychee-action@v1
+        uses: lycheeverse/lychee-action@v1 # Update version if necessary (e.g., v2)
         with:
           args: --verbose --no-progress "./public/**/*.html"
 
-      # - name: Accessibility audit
-      #   run: |
-      #     npm i -g static-sitemap-cli
-      #     sscli -b http://localhost:3000 -r public
+      - name: Accessibility audit setup (Puppeteer workaround)
+        run: |
+          npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth static-sitemap-cli pa11y pa11y-ci serve
 
-      #     npm install -g pa11y pa11y-ci serve
-      #     npx serve ./public &
+      - name: Accessibility audit execution (with Puppeteer fix)
+        env:
+          PUPPETEER_SKIP_DOWNLOAD_CHROMIUM: true
+          PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium-browser
+          PUPPETEER_ARGS: --no-sandbox
+          PORT: 3000
+        run: |
+          sscli -b http://localhost:${PORT}/sitemap.xml \
+                || echo "Error generating sitemap."
 
-      #     # Wait for the server to be available
-      #     for i in {1..10}; do
-      #       curl -s --head http://localhost:3000/sitemap.xml | grep "200 OK" && break
-      #       echo "Waiting for server..."
-      #       sleep 2
-      #     done
+          npx serve ./public -l ${PORT} &
 
-      #     # Verify sitemap exists before running pa11y-ci
-      #     if curl -s --head http://localhost:3000/sitemap.xml | grep "200 OK"; then
-      #       PUPPETEER_ARGS="--no-sandbox" pa11y-ci --sitemap http://localhost:3000/sitemap.xml
-      #     else
-      #       echo "Error: sitemap.xml not found"
-      #       exit 1
-      #     fi
+          for i in {1..10}; do 
+            curl http://localhost:${PORT}/sitemap.xml \
+              && break || echo "Waiting..." && sleep 2; 
+            done 
+
+            if curl http://localhost:${PORT}/sitemap.xml; then 
+              npx pa11y-ci --sitemap http://localhost:${PORT}/sitemap.xml;
+            else 
+              echo "Sitemap not found."
+              exit 1;
+            fi
 
       - name: Cache dependencies
         uses: actions/cache@v3
