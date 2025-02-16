@@ -6,6 +6,7 @@
 
 - [Installation](getting-started/installation.md)
 - [First Steps with Steel](getting-started/first-steps.md)
+- [Understanding a Basic Steel Program](getting-started/steel-program.md)
 
 # References
 
