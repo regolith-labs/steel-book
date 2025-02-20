@@ -1,10 +1,10 @@
-# Understanding a Basic Steel Program
+# Understanding a Steel Program
 
 Steel offers a modular approach, a library of helper functions, and macros for Solana program development. In this tutorial, you will explore Steel’s boilerplate program, a counter program.
 
 ### Prerequisites
 
-Before you begin, ensure the following tools are installed in your development environment:
+Before you begin, ensure you have the following tools installed in your development environment:
 
 - **Rust**: [Install Rust](installation.html#install-rust).
 - **Steel CLI**: [Install Steel CLI](installation.html#install-steel-cli).

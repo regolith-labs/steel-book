@@ -1,4 +1,4 @@
-# First Steps with Steel
+# First Steps
 
 This section introduces the steel command-line tool. We will walk through creating a new project, compiling it, and running tests.
 
