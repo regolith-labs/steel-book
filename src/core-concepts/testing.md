@@ -5,10 +5,10 @@ Testing in Steel ensures that Solana programs function correctly before deployme
 Steel enforces a structured approach to testing by:
 
 - Using `solana-program-test` to execute program logic in an isolated environment.
-- Providing a way to manually construct transactions, ensuring developers understand how their instructions interact with the blockchain.
+- Providing a way to manually construct transactions, ensuring you understand how their instructions interact with the blockchain.
 - Allowing direct access to account data for precise validation of expected state changes.
 
-Since Steel does not abstract transaction creation, developers have full control over signing, submitting, and verifying transactions. This is particularly useful for testing scenarios where specific accounts must sign transactions, multiple instructions need to be executed in sequence, or fine-tuned error handling is required.
+Since Steel does not abstract transaction creation, you have full control over signing, submitting, and verifying transactions. This is particularly useful for testing scenarios where specific accounts must sign transactions, multiple instructions need to be executed in sequence, or fine-tuned error handling is required.
 
 ## Key Concepts
 
@@ -18,7 +18,7 @@ Steel runs tests inside a local, in-memory Solana ledger created using `ProgramT
 
 ### **BanksClient**
 
-The `BanksClient` provides a way to interact with the test ledger by submitting transactions, querying account states, and retrieving logs. Direct access to `BanksClient` allows developers to:
+The `BanksClient` provides a way to interact with the test ledger by submitting transactions, querying account states, and retrieving logs. Direct access to `BanksClient` allows you to:
 
 - Fetch account data before and after transactions to confirm expected changes.
 - Handle errors at the transaction level and inspect their causes.
@@ -28,11 +28,11 @@ This level of control is useful when testing behaviors that involve multiple acc
 
 ### **Transactions & Instructions**
 
-Steel requires tests to construct transactions explicitly. Developers must:
+Steel requires tests to construct transactions explicitly. You must:
 
 1. Create individual instructions specifying which accounts are involved.
 2. Bundle these instructions into a transaction.
 3. Sign the transaction with the necessary keys.
 4. Submit the transaction to the test ledger and check for success or failure.
 
-This process ensures that developers fully understand how their program interacts with the blockchain rather than relying on automated transaction handling. It also makes testing edge cases, such as missing signatures, incorrect instruction data, or invalid account ownership easier.
+This process ensures that you fully understand how their program interacts with the blockchain rather than relying on automated transaction handling. It also makes testing edge cases, such as missing signatures, incorrect instruction data, or invalid account ownership easier.
