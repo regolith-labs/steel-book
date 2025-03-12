@@ -5,8 +5,8 @@
 # Getting Started
 
 - [Installation](getting-started/installation.md)
-- [First Steps](getting-started/first-steps.md)
-- [Understanding a Steel Program](getting-started/steel-program.md)
+- [Quickstart](getting-started/quickstart.md)
+- [File Structure](getting-started/file-structure.md)
 
 # References
 

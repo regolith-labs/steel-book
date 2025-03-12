@@ -1,6 +1,6 @@
-# Understanding a Steel Program
+# Quickstart
 
-Steel offers a modular approach, a library of helper functions, and macros for Solana program development. In this tutorial, you will explore Steel’s boilerplate program, a counter program.
+Steel offers a modular approach, a library of helper functions, and macros for Solana program development. In this tutorial, you will explore Steel's boilerplate program, a counter program.
 
 ### Prerequisites
 
@@ -52,7 +52,7 @@ Running the command above creates a `hello-steel` directory with the file tree b
 The file tree contains the following folders:
 
 - **api**: This folder contains types, program states & constants available to the rest of your Solana program.
-- **program**: The program folder contains the business logic for your program’s instructions.
+- **program**: The program folder contains the business logic for your program's instructions.
 
 ### Program overview
 
@@ -62,7 +62,7 @@ The generated program maintains a single counter value that can be initialized t
 
 ```rust
 //program/src/initialize
-use increment_api::prelude::*;
+use hello_steel_api::prelude::*;
 use steel::*;
 
 pub fn process_initialize(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramResult {
@@ -70,10 +70,12 @@ pub fn process_initialize(accounts: &[AccountInfo<'_>], _data: &[u8]) -> Program
     let [signer_info, counter_info, system_program] = accounts else {
         return Err(ProgramError::NotEnoughAccountKeys);
     };
+
+    // Validate accounts.
     signer_info.is_signer()?;
     counter_info.is_empty()?.is_writable()?.has_seeds(
         &[COUNTER],
-        &increment_api::ID
+        &hello_steel_api::ID
     )?;
     system_program.is_program(&system_program::ID)?;
 
@@ -82,10 +84,12 @@ pub fn process_initialize(accounts: &[AccountInfo<'_>], _data: &[u8]) -> Program
         counter_info,
         system_program,
         signer_info,
-        &increment_api::ID,
+        &hello_steel_api::ID,
         &[COUNTER],
     )?;
-    let counter = counter_info.as_account_mut::<Counter>(&increment_api::ID)?;
+
+    // Deserialize counter_info and set its `value` field to 0.
+    let counter = counter_info.as_account_mut::<Counter>(&hello_steel_api::ID)?;
     counter.value = 0;
 
     Ok(())
@@ -93,36 +97,65 @@ pub fn process_initialize(accounts: &[AccountInfo<'_>], _data: &[u8]) -> Program
 
 ```
 
+Steel provides chainable helper methods for account validation:
+
+```rust
+// Validate accounts.
+signer_info.is_signer()?;
+counter_info.is_empty()?.is_writable()?.has_seeds(
+    &[COUNTER],
+    &hello_steel_api::ID
+)?;
+system_program.is_program(&system_program::ID)?;
+```
+
+Steel simplifies common cross-program invocations with helper functions:
+
+```rust
+// Initialize counter.
+create_program_account::<Counter>(
+    counter_info,
+    system_program,
+    signer_info,
+    &hello_steel_api::ID,
+    &[COUNTER],
+)?;
+```
+
+These methods check account properties (signing authority, writability, PDA seeds, etc.) and return errors if validation fails, creating clean, readable security checks.
+
 `Add` adds a specified amount to the counter, with checks to ensure it stays below 100.
 
 ```rust
 //program/src/add
-use increment_api::prelude::*;
+use hello_steel_api::prelude::*;
 use steel::*;
 
 pub fn process_add(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
     // Parse args.
     let args = Add::try_from_bytes(data)?;
-	let amount = u64::from_le_bytes(args.amount);
+    let amount = u64::from_le_bytes(args.amount);
 
     // Load accounts.
     let [signer_info, counter_info] = accounts else {
         return Err(ProgramError::NotEnoughAccountKeys);
     };
+
+    // Validate accounts.
     signer_info.is_signer()?;
-	let counter = counter_info
-		.as_account_mut::<Counter>(&increment_api::ID)?
+    let counter = counter_info
+		.as_account_mut::<Counter>(&hello_steel_api::ID)?
 		.assert_mut(|c| c.value < 100)?;
 
     // Update state
-	counter.value += amount;
+    counter.value += amount;
 
     Ok(())
 }
 
 ```
 
-The program tracks the counter’s state with a `Counter` struct:
+The program tracks the counter's state with a `Counter` struct:
 
 ```rust
 //api/src/state
@@ -139,7 +172,7 @@ The counter is stored in a PDA (Program Derived Address).
 
 The project includes integration tests that:
 
-- Initializes and verifies the counter’s initialization
+- Initializes and verifies the counter's initialization
 - Add values to the counter and verifies the addition
 
 You can run these tests by executing the command below:
