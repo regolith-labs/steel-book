@@ -131,16 +131,19 @@ agave-install update
 ### Install Steel Cli
 
 Install the Steel CLI:
+
 ```sh
-cargo install steel-cli
+cargo install steel
 ```
 
 Verify Steel was installed:
+
 ```sh
 steel --version
 ```
 
 You should see output similar to the following:
-```
+
+```sh
 steel-cli 2.1.1
 ```
